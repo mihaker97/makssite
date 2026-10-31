@@ -230,16 +230,10 @@
   });
 
   // переход назад на счётчик
-  $("back").addEventListener("click", async e => {
+    $("back").addEventListener("click", e => {
     e.preventDefault();
-    const href = e.currentTarget.href, r = e.currentTarget.getBoundingClientRect(), w = $("wipe");
-    if (reduce || !w.animate) { location.href = href; return; }
-    const x = r.left + r.width / 2, y = r.top + r.height / 2;
-    const R = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y)) + 30;
-    w.style.animation = "none";
-    await w.animate([{ clipPath: "circle(0px at " + x + "px " + y + "px)" }, { clipPath: "circle(" + R + "px at " + x + "px " + y + "px)" }],
-      { duration: 700, easing: "cubic-bezier(.7,0,.25,1)", fill: "forwards" }).finished;
-    location.href = href;
+    const r = e.currentTarget.getBoundingClientRect();
+    FX.leave(e.currentTarget.href, r.left + r.width / 2, r.top + r.height / 2);
   });
 </script>
 </body>
