@@ -153,10 +153,14 @@
     if (r.error) $("err").textContent = "Не получилось войти: " + r.error.message;
   });
   $("out").addEventListener("click", async () => {
-  try { await sb.auth.signOut({ scope: "local" }); } catch (e) {}
+  try {
+    await Promise.race([
+      sb.auth.signOut({ scope: "local" }),
+      new Promise(r => setTimeout(r, 1500))
+    ]);
+  } catch (e) {}
   Object.keys(localStorage).filter(k => k.startsWith("sb-")).forEach(k => localStorage.removeItem(k));
-  $("grid").replaceChildren();
-  setUser(null);
+  location.reload();
 });
 
     let loadId = 0;
