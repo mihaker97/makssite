@@ -168,6 +168,9 @@
     <button class="nav left show" id="back" aria-label="Назад">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
     </button>
+        <button class="nav show" id="toGallery" aria-label="Фото">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
+    </button>
     <div class="card">
       <div class="enter" style="--i:0"><span class="beat">♥</span></div>
       <div class="cap enter" style="--i:1">Мы вместе</div>
@@ -302,6 +305,16 @@
   const ctr = el => { const r = el.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; };
   next.addEventListener("click", () => go("days", ...ctr(next)));
   back.addEventListener("click", () => go("home", ...ctr(back)));
+    const toGallery = document.getElementById("toGallery");
+  toGallery.addEventListener("click", async () => {
+    if (reduce || !wipe.animate) { location.href = "gallery.html"; return; }
+    const [x, y] = ctr(toGallery);
+    const R = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y)) + 30;
+    await wipe.animate(
+      [{ clipPath: "circle(0px at " + x + "px " + y + "px)" }, { clipPath: "circle(" + R + "px at " + x + "px " + y + "px)" }],
+      { duration: 800, easing: "cubic-bezier(.7,0,.25,1)", fill: "forwards" }).finished;
+    location.href = "gallery.html";
+  });
   addEventListener("keydown", e => {
     if (e.key === "ArrowRight") go("days", innerWidth - 50, innerHeight / 2);
     if (e.key === "ArrowLeft") go("home", 50, innerHeight / 2);
