@@ -301,33 +301,20 @@
     daysV.classList.toggle("active", to === "days");
     if (to === "days") runCount();
   }
-  async function go(to, ox = innerWidth / 2, oy = innerHeight / 2, push = true) {
+    async function go(to, ox = innerWidth / 2, oy = innerHeight / 2, push = true) {
     if (busy || to === current) return;
     if (push) { try { history.pushState(null, "", "#" + to); } catch (e) {} }
-    if (reduce || !wipe.animate) { setView(to); return; }
     busy = true;
-    const R = Math.hypot(Math.max(ox, innerWidth - ox), Math.max(oy, innerHeight - oy)) + 30;
-    await wipe.animate(
-      [{ clipPath: "circle(0px at " + ox + "px " + oy + "px)" }, { clipPath: "circle(" + R + "px at " + ox + "px " + oy + "px)" }],
-      { duration: 800, easing: "cubic-bezier(.7,0,.25,1)", fill: "forwards" }).finished;
+    await FX.cover(ox, oy);
     setView(to);
-    await wipe.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 700, delay: 250, easing: "ease", fill: "forwards" }).finished;
-    wipe.getAnimations().forEach(a => a.cancel());
+    await FX.uncover();
     busy = false;
   }
   const ctr = el => { const r = el.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; };
   next.addEventListener("click", () => go("days", ...ctr(next)));
   back.addEventListener("click", () => go("home", ...ctr(back)));
     const toGallery = document.getElementById("toGallery");
-  toGallery.addEventListener("click", async () => {
-    if (reduce || !wipe.animate) { location.href = "gallery.html"; return; }
-    const [x, y] = ctr(toGallery);
-    const R = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y)) + 30;
-    await wipe.animate(
-      [{ clipPath: "circle(0px at " + x + "px " + y + "px)" }, { clipPath: "circle(" + R + "px at " + x + "px " + y + "px)" }],
-      { duration: 800, easing: "cubic-bezier(.7,0,.25,1)", fill: "forwards" }).finished;
-    location.href = "gallery.html";
-  });
+toGallery.addEventListener("click", () => FX.leave("gallery.html", ...ctr(toGallery)));
   addEventListener("keydown", e => {
     if (e.key === "ArrowRight") go("days", innerWidth - 50, innerHeight / 2);
     if (e.key === "ArrowLeft") go("home", 50, innerHeight / 2);
