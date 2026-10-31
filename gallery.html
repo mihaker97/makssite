@@ -152,7 +152,12 @@
     const r = await sb.auth.signInWithPassword({ email: $("em").value.trim(), password: $("pw").value });
     if (r.error) $("err").textContent = "Не получилось войти: " + r.error.message;
   });
-  $("out").addEventListener("click", () => sb.auth.signOut());
+  $("out").addEventListener("click", async () => {
+  try { await sb.auth.signOut({ scope: "local" }); } catch (e) {}
+  Object.keys(localStorage).filter(k => k.startsWith("sb-")).forEach(k => localStorage.removeItem(k));
+  $("grid").replaceChildren();
+  setUser(null);
+});
 
     let loadId = 0;
   async function load() {
