@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Наши фото ♥</title>
+<style>
+  @property --a { syntax: "<angle>"; initial-value: 0deg; inherits: false; }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html, body { margin: 0; min-height: 100%; }
+  body { color: #fff; background: #0d0b1f; font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif; }
+  .aurora {
+    position: fixed; inset: 0; z-index: 0;
+    background:
+      radial-gradient(60vmax 60vmax at 15% 20%, rgba(255,105,160,.55), transparent 60%),
+      radial-gradient(55vmax 55vmax at 85% 25%, rgba(108,140,255,.50), transparent 60%),
+      radial-gradient(60vmax 60vmax at 60% 90%, rgba(181,123,255,.55), transparent 60%),
+      linear-gradient(135deg, #14102e, #2a1650, #4a1f5e);
+    background-size: 140% 140%, 140% 140%, 140% 140%, 100% 100%;
+    animation: drift 22s ease-in-out infinite alternate;
+  }
+  @keyframes drift { to { background-position: 40% 30%, 60% 40%, 20% 70%, 0 0; filter: hue-rotate(25deg); } }
+
+  main { position: relative; z-index: 2; min-height: 100vh; padding: 5rem 1.2rem 3rem; display: flex; flex-direction: column; align-items: center; }
+  .card {
+    position: relative; border-radius: 28px; padding: 2rem; width: min(100%, 420px); text-align: center;
+    background: rgba(255,255,255,.07); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+    box-shadow: 0 30px 80px rgba(0,0,0,.35);
+  }
+  .card::before {
+    content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1.5px; pointer-events: none;
+    background: conic-gradient(from var(--a), transparent 0 55%, #ff8fb1 75%, #ffd1a0 85%, #b57bff 95%, transparent);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+            mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+    animation: spin 6s linear infinite;
+  }
+  @keyframes spin { to { --a: 360deg; } }
+  h2 { margin: 0 0 1.2rem; font-weight: 300; font-size: clamp(1.6rem, 5vw, 2.4rem); letter-spacing: .03em; }
+  input[type=email], input[type=password] {
+    width: 100%; margin-bottom: .8rem; padding: .85rem 1rem; font: inherit; color: #fff; outline: none;
+    background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.25); border-radius: 14px;
+  }
+  input:focus { border-color: #ff8fb1; box-shadow: 0 0 20px rgba(255,143,177,.4); }
+  .btn {
+    display: inline-block; padding: .8rem 1.5rem; font: inherit; color: #fff; cursor: pointer; border: 0; border-radius: 999px;
+    background: linear-gradient(135deg, #ff6f9f, #b57bff); box-shadow: 0 8px 30px rgba(255,105,160,.4); transition: transform .2s, box-shadow .2s;
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(255,105,160,.6); }
+  .btn.ghost { background: rgba(255,255,255,.12); box-shadow: none; }
+  .err, .msg { min-height: 1.3em; margin: .8rem 0 0; font-size: .95rem; color: #ffc3d8; }
+
+  #app { width: min(100%, 1100px); }
+  .top { display: flex; flex-wrap: wrap; gap: .8rem; align-items: center; justify-content: space-between; margin-bottom: 1.4rem; }
+  .top h2 { margin: 0; }
+  .grid { columns: 3 220px; column-gap: 14px; }
+  .grid img {
+    width: 100%; display: block; margin-bottom: 14px; border-radius: 18px; cursor: zoom-in; background: rgba(255,255,255,.08);
+    box-shadow: 0 10px 30px rgba(0,0,0,.3); animation: up .8s cubic-bezier(.2,.8,.2,1) calc(var(--i) * .07s) both; transition: transform .3s;
+  }
+  .grid img:hover { transform: scale(1.02); }
+  @keyframes up { from { opacity: 0; transform: translateY(24px); filter: blur(8px); } }
+  .empty { text-align: center; color: rgba(255,255,255,.7); margin-top: 3rem; }
+
+  #lb { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; background: rgba(8,6,20,.88); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+  #lb img { max-width: 94vw; max-height: 82vh; border-radius: 16px; box-shadow: 0 20px 80px rgba(0,0,0,.6); }
+  #lb .bar { position: absolute; bottom: calc(1.2rem + env(safe-area-inset-bottom)); display: flex; gap: .8rem; }
+
+  .nav {
+    position: fixed; z-index: 5; top: calc(1.2rem + env(safe-area-inset-top)); left: 1.2rem; width: 50px; height: 50px; display: grid; place-items: center;
+    color: #fff; border-radius: 50%; border: 1px solid rgba(255,255,255,.3); background: rgba(255,255,255,.1);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); transition: box-shadow .3s, transform .3s;
+  }
+  .nav:hover { box-shadow: 0 0 35px rgba(255,143,177,.55); transform: scale(1.08); }
+  .nav svg { width: 24px; height: 24px; }
+
+  .wipe {
+    position: fixed; inset: 0; z-index: 50; pointer-events: none; display: grid; place-items: center;
+    background: linear-gradient(135deg, #ff6f9f, #b57bff 55%, #6c8cff); clip-path: circle(150vmax at 50% 50%);
+    animation: reveal 1s cubic-bezier(.7,0,.25,1) .1s forwards;
+  }
+  .wipe span { font-size: clamp(4rem, 16vw, 8rem); text-shadow: 0 0 40px rgba(255,255,255,.7); }
+  @keyframes reveal { to { clip-path: circle(0px at 50% 50%); } }
+  @media (prefers-reduced-motion: reduce) { .aurora, .card::before, .grid img { animation: none; } .wipe { display: none; } }
+</style>
+</head>
+<body>
+  <div class="aurora"></div>
+  <div class="wipe" id="wipe"><span>♥</span></div>
+
+  <a class="nav" id="back" href="index.html#days" aria-label="Назад">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+  </a>
+
+  <main>
+    <section class="card" id="login" hidden>
+      <h2>Наши фото ♥</h2>
+      <form id="lf">
+        <input type="email" id="em" placeholder="Почта" autocomplete="username" required>
+        <input type="password" id="pw" placeholder="Пароль" autocomplete="current-password" required>
+        <button class="btn" type="submit">Войти</button>
+      </form>
+      <p class="err" id="err"></p>
+    </section>
+
+    <section id="app" hidden>
+      <div class="top">
+        <h2>Наши фото ♥</h2>
+        <div>
+          <label class="btn">+ Добавить<input type="file" id="file" accept="image/*" multiple hidden></label>
+          <button class="btn ghost" id="out">Выйти</button>
+        </div>
+      </div>
+      <p class="msg" id="msg"></p>
+      <div class="grid" id="grid"></div>
+      <p class="empty" id="empty" hidden>Пока тут пусто. Добавь первое фото ♥</p>
+    </section>
+  </main>
+
+  <div id="lb" hidden>
+    <img id="big" alt="Фото">
+    <div class="bar">
+      <button class="btn ghost" id="del" hidden>Удалить</button>
+      <button class="btn" id="close">Закрыть</button>
+    </div>
+  </div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+  const sb = supabase.createClient("https://cybozsjvdzzuxqwmyzku.supabase.co", "sb_publishable_vC4hZcyGeSY_30s5hox2TA_xvNMpLVt");
+  const $ = id => document.getElementById(id);
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let me = null, current = null;
+
+  function setUser(u) {
+    me = u; $("login").hidden = !!u; $("app").hidden = !u;
+    if (u) load();
+  }
+  sb.auth.getSession().then(r => setUser(r.data.session ? r.data.session.user : null));
+  sb.auth.onAuthStateChange((_e, s) => { const u = s ? s.user : null; if ((u && u.id) !== (me && me.id)) setUser(u); });
+
+  $("lf").addEventListener("submit", async e => {
+    e.preventDefault(); $("err").textContent = "";
+    const r = await sb.auth.signInWithPassword({ email: $("em").value.trim(), password: $("pw").value });
+    if (r.error) $("err").textContent = "Не получилось войти: " + r.error.message;
+  });
+  $("out").addEventListener("click", () => sb.auth.signOut());
+
+  async function load() {
+    const r = await sb.from("photos").select("id,path,user_id").order("created_at", { ascending: false });
+    if (r.error) { $("msg").textContent = r.error.message; return; }
+    const grid = $("grid"); grid.replaceChildren();
+    $("empty").hidden = r.data.length > 0;
+    if (!r.data.length) return;
+    const s = await sb.storage.from("photos").createSignedUrls(r.data.map(p => p.path), 3600);
+    const urls = new Map((s.data || []).map(u => [u.path, u.signedUrl]));
+    r.data.forEach((p, i) => {
+      const url = urls.get(p.path); if (!url) return;
+      const img = new Image(); img.src = url; img.alt = "Фото"; img.loading = "lazy";
+      img.style.setProperty("--i", Math.min(i, 12));
+      img.onclick = () => { current = p; $("big").src = url; $("del").hidden = p.user_id !== me.id; $("lb").hidden = false; };
+      grid.appendChild(img);
+    });
+  }
+
+  // сжатие в браузере: до 1920px по длинной стороне, JPEG
+  async function shrink(file) {
+    const bmp = await createImageBitmap(file, { imageOrientation: "from-image" });
+    const k = Math.min(1, 1920 / Math.max(bmp.width, bmp.height));
+    const c = document.createElement("canvas");
+    c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
+    c.getContext("2d").drawImage(bmp, 0, 0, c.width, c.height);
+    return new Promise(res => c.toBlob(res, "image/jpeg", .82));
+  }
+
+  $("file").addEventListener("change", async e => {
+    const files = [...e.target.files]; e.target.value = ""; let ok = 0, bad = "";
+    for (let i = 0; i < files.length; i++) {
+      $("msg").textContent = "Загружаю " + (i + 1) + " из " + files.length + "…";
+      try {
+        const blob = await shrink(files[i]);
+        const path = me.id + "/" + Date.now() + "-" + Math.random().toString(36).slice(2, 8) + ".jpg";
+        const up = await sb.storage.from("photos").upload(path, blob, { contentType: "image/jpeg" });
+        if (up.error) throw up.error;
+        const ins = await sb.from("photos").insert({ path });
+        if (ins.error) { await sb.storage.from("photos").remove([path]); throw ins.error; }
+        ok++;
+      } catch (err) { bad = err.message || "не удалось обработать файл (HEIC не поддерживается)"; }
+    }
+    $("msg").textContent = bad ? "Ошибка: " + bad : "Готово ♥";
+    if (ok) load();
+  });
+
+  const closeLb = () => { $("lb").hidden = true; $("big").removeAttribute("src"); current = null; };
+  $("close").addEventListener("click", closeLb);
+  $("lb").addEventListener("click", e => { if (e.target === $("lb")) closeLb(); });
+  addEventListener("keydown", e => { if (e.key === "Escape") closeLb(); });
+  $("del").addEventListener("click", async () => {
+    if (!current || !confirm("Удалить это фото?")) return;
+    const r = await sb.from("photos").delete().eq("id", current.id);
+    if (r.error) { $("msg").textContent = r.error.message; return; }
+    await sb.storage.from("photos").remove([current.path]);
+    closeLb(); load();
+  });
+
+  // переход назад на счётчик
+  $("back").addEventListener("click", async e => {
+    e.preventDefault();
+    const href = e.currentTarget.href, r = e.currentTarget.getBoundingClientRect(), w = $("wipe");
+    if (reduce || !w.animate) { location.href = href; return; }
+    const x = r.left + r.width / 2, y = r.top + r.height / 2;
+    const R = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y)) + 30;
+    w.style.animation = "none";
+    await w.animate([{ clipPath: "circle(0px at " + x + "px " + y + "px)" }, { clipPath: "circle(" + R + "px at " + x + "px " + y + "px)" }],
+      { duration: 700, easing: "cubic-bezier(.7,0,.25,1)", fill: "forwards" }).finished;
+    location.href = href;
+  });
+</script>
+</body>
+</html>
