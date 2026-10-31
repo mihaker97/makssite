@@ -1,0 +1,43 @@
+/* 1. Убираем самое дорогое для видеочипа */
+.aurora { animation: none !important; filter: none !important; overflow: hidden; }
+.aurora::after {
+  content: ""; position: absolute; inset: -20%; will-change: transform;
+  background:
+    radial-gradient(40vmax 40vmax at 30% 30%, rgba(255,143,177,.35), transparent 60%),
+    radial-gradient(40vmax 40vmax at 70% 70%, rgba(108,140,255,.30), transparent 60%);
+  animation: auroraMove 24s ease-in-out infinite alternate;
+}
+@keyframes auroraMove { to { transform: translate3d(6%, 4%, 0) rotate(8deg) scale(1.1); } }
+
+.card, .nav {
+  backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
+}
+.card { background: rgba(35, 24, 75, .42) !important; }
+
+/* имена: свечение теперь статичное, по буквам бежит только лёгкая волна */
+.name .ch { color: #ffc3d8; text-shadow: 0 0 16px rgba(255,105,160,.6); }
+@keyframes wave { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+
+.heart { text-shadow: none !important; will-change: transform, opacity; }
+
+/* 2. Пока идёт переход, всё тяжёлое выключено */
+html.busy canvas, html.busy .heart, html.busy .glow { display: none !important; }
+html.busy .aurora::after, html.busy .card, html.busy .card::before, html.busy .ch,
+html.busy .enter, html.busy .beat, html.busy .nav::after { animation-play-state: paused !important; }
+
+/* 3. Новый переход: круг двигается через transform (это работает на GPU) */
+.wipe { display: none !important; }
+#fxwipe {
+  position: fixed; left: 0; top: 0; width: 200px; height: 200px; border-radius: 50%;
+  z-index: 90; pointer-events: none; display: none; will-change: transform;
+  background: linear-gradient(135deg, #ff6f9f, #b57bff 55%, #6c8cff);
+}
+#fxheart {
+  position: fixed; inset: 0; z-index: 91; display: none; place-items: center; pointer-events: none;
+  font-size: clamp(4rem, 16vw, 8rem); color: #fff; text-shadow: 0 0 40px rgba(255,255,255,.7);
+}
+/* закрывает страницу до того, как загрузится скрипт, чтобы не мигало */
+html.fxin::before {
+  content: ""; position: fixed; inset: 0; z-index: 89;
+  background: linear-gradient(135deg, #ff6f9f, #b57bff 55%, #6c8cff);
+}
