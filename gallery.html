@@ -146,21 +146,26 @@
   });
   $("out").addEventListener("click", () => sb.auth.signOut());
 
+    let loadId = 0;
   async function load() {
+    const run = ++loadId;
     const r = await sb.from("photos").select("id,path,user_id").order("created_at", { ascending: false });
+    if (run !== loadId) return;
     if (r.error) { $("msg").textContent = r.error.message; return; }
-    const grid = $("grid"); grid.replaceChildren();
     $("empty").hidden = r.data.length > 0;
-    if (!r.data.length) return;
+    if (!r.data.length) { $("grid").replaceChildren(); return; }
     const s = await sb.storage.from("photos").createSignedUrls(r.data.map(p => p.path), 3600);
+    if (run !== loadId) return;
     const urls = new Map((s.data || []).map(u => [u.path, u.signedUrl]));
+    const frag = document.createDocumentFragment();
     r.data.forEach((p, i) => {
       const url = urls.get(p.path); if (!url) return;
       const img = new Image(); img.src = url; img.alt = "Фото"; img.loading = "lazy";
       img.style.setProperty("--i", Math.min(i, 12));
       img.onclick = () => { current = p; $("big").src = url; $("del").hidden = p.user_id !== me.id; $("lb").hidden = false; };
-      grid.appendChild(img);
+      frag.appendChild(img);
     });
+    $("grid").replaceChildren(frag);
   }
 
   // сжатие в браузере: до 1920px по длинной стороне, JPEG
