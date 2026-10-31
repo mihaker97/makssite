@@ -16,8 +16,6 @@
 <meta name="apple-mobile-web-app-title" content="Макс ♥ Настя">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <style>
-  @view-transition { navigation: auto; }
-::view-transition-group(root) { animation-duration: .35s; }
   @property --a { syntax: "<angle>"; initial-value: 0deg; inherits: false; }
   * { box-sizing: border-box; }
   html, body { height: 100%; margin: 0; }
@@ -159,6 +157,8 @@
     canvas, .heart { display: none; }
   }
 </style>
+    <link rel="stylesheet" href="fx.css">
+  <script src="fx.js"></script>
 </head>
 <body>
   <div class="aurora"></div>
