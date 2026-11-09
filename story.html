@@ -22,8 +22,9 @@
   /* экран: сверху фотки сами по себе, снизу окно с текстом, всё помещается без прокрутки */
   #stage { position: fixed; inset: 0; z-index: 2; display: flex; flex-direction: column; gap: 12px; padding: calc(10px + env(safe-area-inset-top)) 12px calc(10px + env(safe-area-inset-bottom)); }
   #ph { flex: 1 1 0; min-height: 0; display: flex; gap: 10px; justify-content: center; align-items: center; }
-  .fr { position: relative; flex: 1 1 0; min-width: 0; min-height: 0; height: 100%; animation: drop .9s cubic-bezier(.2,.9,.3,1.15) var(--d, 0s) both; }
-  .fr img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 10px 24px rgba(0,0,0,.5)); -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+  .fr { position: relative; flex: 1 1 0; min-width: 0; min-height: 0; height: 100%; display: flex; align-items: center; justify-content: center; animation: drop .9s cubic-bezier(.2,.9,.3,1.15) var(--d, 0s) both; }
+  .fr img { flex: none; border-radius: 18px; object-fit: cover; box-shadow: 0 10px 26px rgba(0,0,0,.5); -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+  .fr img.o { position: absolute; inset: 0; margin: auto; }
   @keyframes drop { from { opacity: 0; transform: translateY(-70px) scale(.7) rotate(-8deg); filter: blur(10px); } }
   .hero .col { display: flex; flex-direction: column; gap: 10px; flex: 1 1 0; min-width: 0; height: 100%; } .hero .col:nth-child(2) { flex: 2.4 1 0; } .hero .fr { height: auto; }
   .card { position: relative; width: min(100%, 620px); margin: 0 auto; border-radius: 26px; padding: 1rem 1.1rem; text-align: center; background: rgba(255,255,255,.07); box-shadow: 0 20px 60px rgba(0,0,0,.35); }
@@ -48,7 +49,7 @@
   input, textarea { width: 100%; margin: .3rem 0; padding: .7rem .9rem; font: inherit; color: #fff; outline: none; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.25); border-radius: 14px; }
   textarea { min-height: 84px; resize: none; } input.okk { border-color: #7ee6a8; }
   .word { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; font-size: clamp(2rem, 10vw, 3.6rem); font-weight: 700; text-shadow: 0 4px 30px rgba(0,0,0,.8); animation: in .6s .2s both; }
-  .pz { display: grid; gap: 3px; touch-action: manipulation; }
+  .pz { display: grid; gap: 3px; touch-action: manipulation; overflow: hidden; border-radius: 18px; }
   .pz div { background-repeat: no-repeat; border-radius: 6px; cursor: pointer; transition: transform .2s, box-shadow .2s; }
   .pz div.sel { transform: scale(.92); box-shadow: 0 0 0 3px #ff8fb1, 0 0 25px #ff8fb1; }
   .pz.done { gap: 0; pointer-events: none; } .pz.done div { border-radius: 0; }
@@ -60,7 +61,7 @@
   @keyframes fly { to { transform: translate(var(--dx), calc(var(--dy) + 80px)) rotate(var(--r)); opacity: 0; } }
   .heart { top: -2rem; z-index: 1; color: #ff8fb1; animation: fall linear forwards; } @keyframes fall { to { transform: translateY(115vh) rotate(40deg); } }
   .ov { position: fixed; inset: 0; z-index: 55; display: grid; place-items: center; background: rgba(10,8,25,.8); animation: in .3s both; }
-  .hv { display: flex; gap: 10px; padding: 14px; } .hv img { flex: 1 1 0; min-width: 0; min-height: 0; max-width: 100%; max-height: 100%; object-fit: contain; }
+  .hv { display: flex; gap: 10px; padding: 14px; } .hv .fr { height: auto; }
   .hv .x { position: absolute; top: 10px; right: 18px; font-size: 2rem; } @media (max-aspect-ratio: 1/1) { .hv { flex-direction: column; } }
   .hs { grid-area: 1/1; width: min(70vmin, 360px); } .hs svg { display: block; width: 100%; fill: url(#hg); filter: drop-shadow(0 0 30px rgba(255,105,160,.7)); }
   .hs.L { clip-path: polygon(0 0, 52% 0, 46% 22%, 54% 40%, 47% 62%, 53% 100%, 0 100%); animation: cl 3s .6s ease-in both; }
@@ -72,10 +73,11 @@
   @keyframes fire { 0% { transform: translateX(-60px); } 99% { transform: translateX(calc(50vw - 24px)); opacity: 1; } 100% { transform: translateX(calc(50vw - 24px)); opacity: 0; } }
   .hole { grid-area: 1/1; width: 30px; height: 30px; border-radius: 50%; background: radial-gradient(#000 35%, #2a0a1a 62%, transparent 70%); animation: hl .1s 1s both; } @keyframes hl { from { transform: scale(0); } }
   .mo { place-items: start center; padding-top: calc(18px + env(safe-area-inset-top)); }
-  .sc { display: grid; gap: 8px; justify-items: center; } .cnt { font-size: 2.2rem; font-weight: 700; }
+  .sc { display: grid; gap: 8px; justify-items: center; position: relative; z-index: 2; } .cnt { font-size: 2.2rem; font-weight: 700; }
   .tr { position: relative; width: min(86vw, 520px); height: 46px; border-radius: 999px; border: 2px solid #fff; background: rgba(255,255,255,.12); overflow: hidden; }
   .tr i { position: absolute; inset: 0 auto 0 0; width: 0; background: linear-gradient(90deg, #ff6f9f, #b57bff); }
-  .fl { position: fixed; left: 0; top: 0; border-radius: 999px; border: 2px solid #fff; background: linear-gradient(90deg, #ff6f9f, #b57bff); box-shadow: 0 0 40px #ff8fb1; will-change: transform; }
+  .trail { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; } .trail path { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .t1 { stroke: #ff6f9f; stroke-width: 28; filter: drop-shadow(0 0 14px #ff8fb1); } .t2 { stroke: #ffd1e3; stroke-width: 10; }
   .inf { font-size: clamp(5rem, 28vw, 12rem); font-weight: 700; line-height: 1; background: linear-gradient(90deg, #ffd1e3, #ff8fb1, #ffc3a0); -webkit-background-clip: text; background-clip: text; color: transparent; animation: in 1s both; }
   @media (prefers-reduced-motion: reduce) { .card::before, .bad, .fr { animation: none; } }
 </style>
@@ -123,7 +125,9 @@ function fb(n) {   // заглушка, если файла нет в бакет
 }
 const url = n => urls[n + ".jpg"] || fb(n);
 const img = n => { const e = el("img"); e.src = url(n); e.alt = ""; e.draggable = false; return e; };
-const fr = (n, k) => { const d = el("div", "fr"); d.style.setProperty("--d", (k || 0) * .2 + "s"); d.appendChild(img(n)); return d; };
+const fit = (e, b) => { if (!e.naturalWidth) return; const k = Math.min(b.clientWidth / e.naturalWidth, b.clientHeight / e.naturalHeight); e.style.width = e.naturalWidth * k + "px"; e.style.height = e.naturalHeight * k + "px"; };
+const fr = (n, k) => { const d = el("div", "fr"), e = img(n); d.style.setProperty("--d", (k || 0) * .2 + "s"); e.onload = () => fit(e, d); d.appendChild(e); return d; };
+addEventListener("resize", () => document.querySelectorAll(".fr > img:not(.o)").forEach(e => fit(e, e.parentNode)));
 const show = list => list.forEach((n, k) => ph.appendChild(fr(n, k)));
 async function sign() {   // ссылки живут час, поэтому обновляем их при возврате на вкладку
   const names = new Set();
@@ -176,11 +180,11 @@ function quiz(s, w) {
   const f0 = ph.firstChild, nb = nextBtn(), row = el("div", "row"); let hb;
   nb.style.visibility = "hidden"; row.appendChild(nb);
   if (s.hold) {   // пока зажато фото, поверх показывается второе
-    const h = img(s.hold); h.style.cssText += ";opacity:0;transition:opacity .15s"; f0.appendChild(h);
-    f0.onpointerdown = () => h.style.opacity = 1; f0.oncontextmenu = e => e.preventDefault();
+    const h = img(s.hold), base = f0.firstChild; h.className = "o"; h.style.cssText += ";opacity:0;transition:opacity .15s"; f0.appendChild(h);
+    f0.onpointerdown = () => { h.style.width = base.offsetWidth + "px"; h.style.height = base.offsetHeight + "px"; h.style.opacity = 1; }; f0.oncontextmenu = e => e.preventDefault();
     ["onpointerup", "onpointerleave", "onpointercancel"].forEach(e => f0[e] = () => h.style.opacity = 0);
   }
-  const hintView = () => { const o = overlay(); o.classList.add("hv"); s.hint.forEach(n => o.appendChild(img(n))); o.appendChild(el("span", "x", "×")); o.onclick = () => o.remove(); };
+  const hintView = () => { const o = overlay(); o.classList.add("hv"); s.hint.forEach((n, k) => o.appendChild(fr(n, k))); o.appendChild(el("span", "x", "×")); o.onclick = () => o.remove(); };
   const bad = node => {
     node.classList.remove("bad"); void node.offsetWidth; node.classList.add("bad");
     if (s.hint && !hb) { hb = el("button", "btn ghost", "Подсказка"); hb.onclick = hintView; row.prepend(hb); if (!s.hb) hintView(); }
@@ -188,7 +192,7 @@ function quiz(s, w) {
   const good = () => {
     nb.style.visibility = "visible";
     if (s.rev) {   // поверх фото появляется второе и слово «Правильно!», из него вылетает конфетти
-      const r = img(s.rev), t = el("div", "word", "Правильно!"); r.style.animation = "in .6s both"; f0.append(r, t);
+      const r = img(s.rev), base = f0.firstChild, t = el("div", "word", "Правильно!"); r.className = "o"; r.style.cssText += ";width:" + base.offsetWidth + "px;height:" + base.offsetHeight + "px;animation:in .6s both"; f0.append(r, t);
       requestAnimationFrame(() => { const b = t.getBoundingClientRect(); pop(b.left + b.width / 2, b.top + b.height / 2, 60, ["■", "●", "▲", "♥"], 1); });
     }
   };
@@ -228,28 +232,42 @@ function open(s, w) {
   w.append(el("h2", "", s.q), ta, el("p", "hint", s.note || ""), nb);
 }
 
-function meter(s, w) {   // шкала остаётся на месте, её наполнение вырывается и бьётся о края экрана, на 1000 взрыв
+function meter(s, w) {   // шкала остаётся на месте, наполнение вырывается, вытягивается в линию и бьётся о края экрана
   show(s.f); const b = el("button", "btn", s.b); w.append(el("h2", "", s.q), b);
   b.onclick = () => {
     b.disabled = true;
     const o = overlay(), sc = el("div", "sc"), c = el("div", "cnt", "0%"), tr = el("div", "tr"), f = el("i");
     o.classList.add("mo"); tr.appendChild(f); sc.append(c, tr); o.appendChild(sc);
-    const r0 = tr.getBoundingClientRect(), mw = r0.width, mh = r0.height; let v = 0, x = r0.left, y = r0.top, vx = 0, vy = 0, fl = null, last = performance.now();
+    const NS = "http://www.w3.org/2000/svg", svg = document.createElementNS(NS, "svg"), p1 = document.createElementNS(NS, "path"), p2 = document.createElementNS(NS, "path");
+    svg.setAttribute("class", "trail"); p1.setAttribute("class", "t1"); p2.setAttribute("class", "t2"); svg.append(p1, p2); o.appendChild(svg);
+    const r0 = tr.getBoundingClientRect(), cy = r0.top + r0.height / 2, M = 14, L0 = r0.width - 2 * M;
+    let v = 0, pts = null, dx = .8, dy = .6, last = performance.now();
     const tick = now => {
       const dt = Math.min(.05, (now - last) / 1000); last = now;
-      if (!fl) {
+      if (!pts) {
         v += dt * 40; f.style.width = Math.min(v, 100) + "%";
-        if (v >= 100) { v = 100; f.style.width = "0"; fl = el("div", "fl"); fl.style.cssText = "width:" + mw + "px;height:" + mh + "px"; o.appendChild(fl); vx = 320; vy = 220; }
+        if (v >= 100) { v = 100; f.style.width = "0"; pts = [{ x: r0.left + M, y: cy }, { x: r0.right - M, y: cy }]; }   // наполнение выходит из шкалы
       } else {
-        v += dt * (100 + .3 * (v - 100)); const k = 1 + v / 500; x += vx * k * dt; y += vy * k * dt;
-        if (x < 0) { x = 0; vx = Math.abs(vx); } if (x > innerWidth - mw) { x = innerWidth - mw; vx = -Math.abs(vx); }
-        if (y < 0) { y = 0; vy = Math.abs(vy); } if (y > innerHeight - mh) { y = innerHeight - mh; vy = -Math.abs(vy); }
-        fl.style.transform = "translate(" + x + "px," + y + "px)";
+        v += dt * (100 + .3 * (v - 100));
+        const H = pts[pts.length - 1], sp = 420 + v * .9; H.x += dx * sp * dt; H.y += dy * sp * dt;
+        let hit = false;
+        if (H.x < M) { H.x = M; dx = Math.abs(dx); hit = true; } if (H.x > innerWidth - M) { H.x = innerWidth - M; dx = -Math.abs(dx); hit = true; }
+        if (H.y < M) { H.y = M; dy = Math.abs(dy); hit = true; } if (H.y > innerHeight - M) { H.y = innerHeight - M; dy = -Math.abs(dy); hit = true; }
+        if (hit) pts.push({ x: H.x, y: H.y });
+        let tot = 0; for (let k = 1; k < pts.length; k++) tot += Math.hypot(pts[k].x - pts[k - 1].x, pts[k].y - pts[k - 1].y);
+        let ex = tot - (L0 + (v - 100) * 3);   // линия удлиняется вместе с процентами
+        while (ex > 0 && pts.length > 1) {
+          const d = Math.hypot(pts[1].x - pts[0].x, pts[1].y - pts[0].y);
+          if (d <= ex && pts.length > 2) { pts.shift(); ex -= d; }
+          else { const q = Math.min(ex, d) / (d || 1); pts[0].x += (pts[1].x - pts[0].x) * q; pts[0].y += (pts[1].y - pts[0].y) * q; break; }
+        }
+        const d = "M" + pts.map(p => p.x.toFixed(1) + " " + p.y.toFixed(1)).join("L"); p1.setAttribute("d", d); p2.setAttribute("d", d);
       }
       c.textContent = Math.floor(v) + "%";
       if (v < 1000) return requestAnimationFrame(tick);
-      [[x + mw / 2, y + mh / 2], [innerWidth * .2, innerHeight * .3], [innerWidth * .8, innerHeight * .3], [innerWidth / 2, innerHeight * .7]].forEach(p => pop(p[0], p[1], 40, ["♥"]));
-      fl.remove(); sc.remove(); o.style.placeItems = "center";
+      const E = pts[pts.length - 1];
+      [[E.x, E.y], [innerWidth * .2, innerHeight * .3], [innerWidth * .8, innerHeight * .3], [innerWidth / 2, innerHeight * .7]].forEach(p => pop(p[0], p[1], 40, ["♥"]));
+      svg.remove(); sc.remove(); o.style.placeItems = "center";
       const z = el("div"); z.style.textAlign = "center"; z.append(el("div", "inf", "∞%"), nextBtn("Дальше →", () => { o.remove(); go(i + 1); })); o.appendChild(z);
     };
     requestAnimationFrame(tick);
