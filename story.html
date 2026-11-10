@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Два года ♥</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#14102e">
+<style>
+  @property --a { syntax: "<angle>"; initial-value: 0deg; inherits: false; }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html, body { margin: 0; height: 100%; overflow: hidden; }
+  body { color: #fff; background: #0d0b1f; font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif; }
+  .aurora { position: fixed; inset: 0; z-index: 0; background:
+    radial-gradient(60vmax 60vmax at 15% 20%, rgba(255,105,160,.55), transparent 60%),
+    radial-gradient(55vmax 55vmax at 85% 25%, rgba(108,140,255,.5), transparent 60%),
+    radial-gradient(60vmax 60vmax at 60% 90%, rgba(181,123,255,.55), transparent 60%),
+    linear-gradient(135deg, #14102e, #2a1650, #4a1f5e); }
+  .center { position: fixed; inset: 0; z-index: 2; display: grid; place-items: center; padding: 1rem; }
+  /* экран: сверху фотки сами по себе, снизу окно с текстом, всё помещается без прокрутки */
+  #stage { position: fixed; inset: 0; z-index: 2; display: flex; flex-direction: column; gap: 12px; padding: calc(10px + env(safe-area-inset-top)) 12px calc(10px + env(safe-area-inset-bottom)); }
+  #ph { flex: 1 1 0; min-width: 0; min-height: 0; overflow: hidden; display: flex; gap: 10px; justify-content: center; align-items: center; }
+  .fr { position: relative; flex: 1 1 0; min-width: 0; min-height: 0; height: 100%; display: flex; align-items: center; justify-content: center; animation: drop .9s cubic-bezier(.2,.9,.3,1.15) var(--d, 0s) both; }
+  .fr img { position: absolute; inset: 0; margin: auto; max-width: 100%; max-height: 100%; border-radius: 18px; object-fit: cover; box-shadow: 0 10px 26px rgba(0,0,0,.5); -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+  .fr img.o { position: absolute; inset: 0; margin: auto; }
+  @keyframes drop { from { opacity: 0; transform: translateY(-70px) scale(.7) rotate(-8deg); filter: blur(10px); } }
+  .hero .col { display: flex; flex-direction: column; gap: 10px; flex: 1 1 0; min-width: 0; height: 100%; } .hero .col:nth-child(2) { flex: 2.4 1 0; } .hero .fr { height: auto; }
+  .card { position: relative; width: min(100%, 620px); margin: 0 auto; border-radius: 26px; padding: 1rem 1.1rem; text-align: center; background: rgba(255,255,255,.07); box-shadow: 0 20px 60px rgba(0,0,0,.35); }
+  #panel { flex: 0 0 auto; max-height: 58dvh; overflow: auto; animation: in .7s .35s both; }
+  .card::before { content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1.5px; pointer-events: none;
+    background: conic-gradient(from var(--a), transparent 0 55%, #ff8fb1 75%, #ffd1a0 85%, #b57bff 95%, transparent);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+            mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0); animation: spin 6s linear infinite; }
+  @keyframes spin { to { --a: 360deg; } }
+  @keyframes in { from { opacity: 0; transform: translateY(22px); filter: blur(8px); } }
+  @media (min-aspect-ratio: 5/4) { #stage { flex-direction: row; } #panel { width: min(430px, 38vw); align-self: center; margin: 0; } }
+  h2 { margin: .2rem 0 .6rem; font-weight: 300; font-size: clamp(1.15rem, 4.6vw, 1.7rem); line-height: 1.25; }
+  p { margin: .4rem 0; line-height: 1.5; font-size: clamp(.95rem, 3.5vw, 1.1rem); color: rgba(255,255,255,.92); }
+  .hint { color: #ffc3d8; font-size: .9rem; }
+  .row { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; }
+  .btn { display: inline-block; margin-top: .6rem; padding: .7rem 1.5rem; font: inherit; color: #fff; cursor: pointer; border: 0; border-radius: 999px; background: linear-gradient(135deg, #ff6f9f, #b57bff); box-shadow: 0 8px 30px rgba(255,105,160,.4); }
+  .btn.ghost { background: rgba(255,255,255,.14); box-shadow: none; } .btn:disabled { opacity: .45; }
+  .opts { display: grid; gap: 7px; }
+  .opt { padding: .65rem .9rem; font: inherit; color: #fff; cursor: pointer; border-radius: 14px; border: 1px solid rgba(255,255,255,.3); background: rgba(255,255,255,.08); }
+  .opt.ok { background: rgba(120,230,160,.3); border-color: #7ee6a8; }
+  .bad { animation: shake .4s; } @keyframes shake { 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+  input, textarea { width: 100%; margin: .3rem 0; padding: .7rem .9rem; font: inherit; color: #fff; outline: none; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.25); border-radius: 14px; }
+  textarea { min-height: 84px; resize: none; } input.okk { border-color: #7ee6a8; }
+  .word { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; font-size: clamp(2rem, 10vw, 3.6rem); font-weight: 700; text-shadow: 0 4px 30px rgba(0,0,0,.8); animation: in .6s .2s both; }
+  .pz { display: grid; gap: 3px; touch-action: manipulation; overflow: hidden; border-radius: 18px; }
+  .pz div { background-repeat: no-repeat; border-radius: 6px; cursor: pointer; transition: transform .2s, box-shadow .2s; }
+  .pz div.sel { transform: scale(.92); box-shadow: 0 0 0 3px #ff8fb1, 0 0 25px #ff8fb1; }
+  .pz.done { gap: 0; pointer-events: none; } .pz.done div { border-radius: 0; }
+  .big { font-size: clamp(1.05rem, 4vw, 1.4rem) !important; }
+  .huge { font-size: clamp(2.1rem, 9.5vw, 3.4rem); font-weight: 700; line-height: 1.15; background: linear-gradient(90deg, #ffd1e3, #ff8fb1, #ffc3a0); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  /* эффекты */
+  .bit, .heart { position: fixed; pointer-events: none; }
+  .bit { z-index: 60; animation: fly 1.4s cubic-bezier(.1,.7,.3,1) forwards; }
+  @keyframes fly { to { transform: translate(var(--dx), calc(var(--dy) + 80px)) rotate(var(--r)); opacity: 0; } }
+  .heart { top: -2rem; z-index: 1; color: #ff8fb1; animation: fall linear forwards; } @keyframes fall { to { transform: translateY(115vh) rotate(40deg); } }
+  .ov { position: fixed; inset: 0; z-index: 55; display: grid; place-items: center; background: rgba(10,8,25,.8); animation: in .3s both; }
+  .hv { display: flex; gap: 10px; padding: 14px; } .hv .fr { height: auto; }
+  .hv .x { position: absolute; top: 10px; right: 18px; font-size: 2rem; } @media (max-aspect-ratio: 1/1) { .hv { flex-direction: column; } }
+  .hs { grid-area: 1/1; width: min(70vmin, 360px); } .hs svg { display: block; width: 100%; fill: url(#hg); filter: drop-shadow(0 0 30px rgba(255,105,160,.7)); }
+  .hs.L { clip-path: polygon(0 0, 52% 0, 46% 22%, 54% 40%, 47% 62%, 53% 100%, 0 100%); animation: cl 3s .6s ease-in both; }
+  .hs.R { clip-path: polygon(52% 0, 100% 0, 100% 100%, 53% 100%, 47% 62%, 54% 40%, 46% 22%); animation: cr 3s .6s ease-in both; }
+  @keyframes cl { 0%, 10% { transform: none; } 20% { transform: translateX(-8px) rotate(-3deg); } 100% { transform: translate(-12vw, 130vh) rotate(-30deg); } }
+  @keyframes cr { 0%, 10% { transform: none; } 20% { transform: translateX(8px) rotate(3deg); } 100% { transform: translate(12vw, 130vh) rotate(30deg); } }
+  .hs.S { animation: hit 3s both; } @keyframes hit { 0%, 30% { transform: none; } 33% { transform: scale(.9) rotate(-4deg); } 42% { transform: scale(1.03) rotate(3deg); } 55%, 100% { transform: none; } }
+  .bullet { grid-area: 1/1; justify-self: start; width: 48px; height: 12px; border-radius: 6px 999px 999px 6px; background: linear-gradient(90deg, #888, #fff); box-shadow: 0 0 14px #fff; animation: fire .5s .5s cubic-bezier(.5,0,1,1) both; }
+  @keyframes fire { 0% { transform: translateX(-60px); } 99% { transform: translateX(calc(50vw - 24px)); opacity: 1; } 100% { transform: translateX(calc(50vw - 24px)); opacity: 0; } }
+  .hole { grid-area: 1/1; width: 30px; height: 30px; border-radius: 50%; background: radial-gradient(#000 35%, #2a0a1a 62%, transparent 70%); animation: hl .1s 1s both; } @keyframes hl { from { transform: scale(0); } }
+  .mo { place-items: start center; padding-top: calc(18px + env(safe-area-inset-top)); }
+  .sc { display: grid; gap: 8px; justify-items: center; position: relative; z-index: 2; } .cnt { font-size: 2.2rem; font-weight: 700; }
+  .tr { position: relative; width: min(86vw, 520px); height: 46px; border-radius: 999px; border: 2px solid #fff; background: rgba(255,255,255,.12); overflow: hidden; }
+  .tr i { position: absolute; inset: 0 auto 0 0; width: 0; background: linear-gradient(90deg, #ff6f9f, #b57bff); }
+  .trail { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; } .trail path { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .t1 { stroke: #fff; } .t2 { stroke: url(#lg); }
+  .sh { border: 2px solid #fff; background: rgba(255,255,255,.28); border-radius: 5px; box-shadow: 0 0 10px rgba(255,143,177,.6); }
+  .inf { font-size: clamp(5rem, 28vw, 12rem); font-weight: 700; line-height: 1; background: linear-gradient(90deg, #ffd1e3, #ff8fb1, #ffc3a0); -webkit-background-clip: text; background-clip: text; color: transparent; animation: in 1s both; }
+  @media (prefers-reduced-motion: reduce) { .card::before, .bad, .fr { animation: none; } }
+</style>
+<link rel="stylesheet" href="fx.css">
+<script src="fx.js"></script>
+</head>
+<body>
+<div class="aurora"></div>
+<svg width="0" height="0" style="position:absolute"><defs><linearGradient id="hg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff6f9f"/><stop offset=".55" stop-color="#b57bff"/><stop offset="1" stop-color="#6c8cff"/></linearGradient></defs></svg>
+<div class="center" id="login" hidden>
+  <section class="card">
+    <h2>Два года ♥</h2>
+    <form id="lf">
+      <input type="email" id="em" placeholder="Почта" autocomplete="username" required>
+      <input type="password" id="pw" placeholder="Пароль" autocomplete="current-password" required>
+      <button class="btn" type="submit">Войти</button>
+    </form>
+    <p class="hint" id="err"></p>
+  </section>
+</div>
+<main id="stage" hidden><div id="ph"></div><section class="card" id="panel"></section></main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+// Тексты, вопросы и ответы лежат в приватном бакете (story.json), а не в публичном репозитории.
+const BUCKET = "story";
+const sb = supabase.createClient("https://cybozsjvdzzuxqwmyzku.supabase.co", "sb_publishable_vC4hZcyGeSY_30s5hox2TA_xvNMpLVt");
+const $ = id => document.getElementById(id), ph = $("ph"), pn = $("panel");
+const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt !== undefined) e.textContent = txt; return e; };
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+};
+let S = [], i = store.get("story_i", 0), urls = {}, signedAt = 0;
+if (/^#\d+$/.test(location.hash)) i = +location.hash.slice(1);   // #5 = открыть шаг 5 (для тестов)
+
+/* ---------- фотки ---------- */
+function fb(n) {   // заглушка, если файла нет в бакете
+  const c = document.createElement("canvas"); c.width = 900; c.height = 600;
+  const x = c.getContext("2d"), g = x.createLinearGradient(0, 0, 900, 600);
+  g.addColorStop(0, "#ff6f9f"); g.addColorStop(.5, "#b57bff"); g.addColorStop(1, "#6c8cff"); x.fillStyle = g; x.fillRect(0, 0, 900, 600);
+  for (let k = 0; k < 12; k++) { x.beginPath(); x.arc((k * 173) % 900, (k * 251) % 600, 40 + k * 6, 0, 6.3); x.fillStyle = "rgba(255,255,255,.18)"; x.fill(); }
+  x.fillStyle = "#fff"; x.font = "bold 64px sans-serif"; x.textAlign = "center"; x.fillText("♥ " + n, 450, 320);
+  return c.toDataURL("image/jpeg", .8);
+}
+const url = n => urls[n + ".jpg"] || fb(n);
+const img = n => { const e = el("img"); e.src = url(n); e.alt = ""; e.draggable = false; return e; };
+const fit = (e, b) => { if (!e.naturalWidth || !b.isConnected) return; if (!b.clientWidth || !b.clientHeight) return requestAnimationFrame(() => fit(e, b)); const k = Math.min(b.clientWidth / e.naturalWidth, b.clientHeight / e.naturalHeight); e.style.width = e.naturalWidth * k + "px"; e.style.height = e.naturalHeight * k + "px"; };
+const fr = (n, k) => { const d = el("div", "fr"), e = img(n); d.style.setProperty("--d", (k || 0) * .2 + "s"); e.onload = () => fit(e, d); d.appendChild(e); return d; };
+const refit = () => document.querySelectorAll(".fr > img:not(.o)").forEach(e => fit(e, e.parentNode));
+addEventListener("resize", refit); new ResizeObserver(refit).observe(ph);
+const show = list => list.forEach((n, k) => ph.appendChild(fr(n, k)));
+async function sign() {   // ссылки живут час, поэтому обновляем их при возврате на вкладку
+  const names = new Set();
+  S.forEach(s => [...(s.f || []), ...(s.L || []), ...(s.R || []), ...(s.hint || []), s.C, s.rev, s.hold].forEach(n => n && names.add(n + ".jpg")));
+  const r = await sb.storage.from(BUCKET).createSignedUrls([...names], 3600);
+  (r.data || []).forEach(u => { if (u.signedUrl) urls[u.path] = u.signedUrl; });
+  signedAt = Date.now();
+}
+
+/* ---------- эффекты ---------- */
+function pop(x, y, n, ch, col) {   // конфетти / сердечки из точки
+  const cs = ["#ff8fb1", "#ffd166", "#7ee6a8", "#6c8cff", "#b57bff", "#fff"];
+  for (let k = 0; k < n; k++) {
+    const p = el("span", "bit", ch[k % ch.length]), a = Math.random() * 6.283, d = 80 + Math.random() * Math.min(innerWidth, innerHeight) * .55;
+    p.style.cssText = "left:" + x + "px;top:" + y + "px;color:" + (col ? cs[k % cs.length] : "#ff8fb1") + ";font-size:" + (12 + Math.random() * 18) + "px;--dx:" + Math.cos(a) * d + "px;--dy:" + Math.sin(a) * d + "px;--r:" + (Math.random() * 720 - 360) + "deg";
+    p.onanimationend = () => p.remove(); document.body.appendChild(p);
+  }
+}
+function hearts() {
+  for (let k = 0; k < 28; k++) {
+    const h = el("span", "heart", "♥");
+    h.style.cssText = "left:" + Math.random() * 100 + "vw;font-size:" + (14 + Math.random() * 22) + "px;animation-duration:" + (5 + Math.random() * 6) + "s;animation-delay:" + Math.random() * 4 + "s";
+    h.onanimationend = () => h.remove(); document.body.appendChild(h);
+  }
+}
+const overlay = ms => { const o = el("div", "ov"); document.body.appendChild(o); if (ms) setTimeout(() => o.remove(), ms); return o; };
+const heart = cls => { const d = el("div", "hs " + cls); d.innerHTML = '<svg viewBox="0 0 100 90"><path d="M50 86C22 64 3 46 3 27 3 13 14 3 27 3c10 0 18 5 23 13C55 8 63 3 73 3c13 0 24 10 24 24 0 19-19 37-47 59z"/></svg>'; return d; };
+const brk = () => overlay(3300).append(heart("L"), heart("R"));                                // большое сердце раскалывается и падает
+const shot = () => overlay(3400).append(heart("S"), el("div", "bullet"), el("div", "hole"));   // выстрел в центр большого сердца
+
+/* ---------- шаги ---------- */
+const go = n => { i = Math.max(0, Math.min(n, S.length - 1)); store.set("story_i", i); render(); };
+const nextBtn = (label, fn) => { const b = el("button", "btn", label || "Дальше →"); b.onclick = fn || (() => go(i + 1)); return b; };
+
+function render() {
+  const s = S[i], w = el("div");
+  ph.replaceChildren(); ph.className = ""; pn.replaceChildren(w); pn.style.animation = "none"; void pn.offsetWidth; pn.style.animation = "";
+  ({ hero, photo, quiz, open, meter, puzzle, final: fin })[s.t](s, w);
+}
+
+function hero(s, w) {   // по центру 37, остальные поменьше по бокам
+  ph.className = "hero";
+  const col = (a, k0) => { const c = el("div", "col"); a.forEach((n, k) => c.appendChild(fr(n, k0 + k))); return c; };
+  ph.append(col(s.L, 1), col([s.C], 0), col(s.R, 2)); w.append(el("p", "", s.text), nextBtn());
+}
+function photo(s, w) { show(s.f); w.append(el("p", "", s.text), nextBtn()); }
+
+function quiz(s, w) {
+  show(s.f);
+  const f0 = ph.firstChild, nb = nextBtn(), row = el("div", "row"); let hb;
+  nb.style.visibility = "hidden"; row.appendChild(nb);
+  if (s.hold) {   // пока зажато фото, поверх показывается второе
+    const h = img(s.hold), base = f0.firstChild; h.className = "o"; h.style.cssText += ";opacity:0;transition:opacity .15s"; f0.appendChild(h);
+    f0.onpointerdown = () => { h.style.width = base.offsetWidth + "px"; h.style.height = base.offsetHeight + "px"; h.style.opacity = 1; }; f0.oncontextmenu = e => e.preventDefault();
+    ["onpointerup", "onpointerleave", "onpointercancel"].forEach(e => f0[e] = () => h.style.opacity = 0);
+  }
+  const hintView = () => { const o = overlay(); o.classList.add("hv"); s.hint.forEach((n, k) => o.appendChild(fr(n, k))); o.appendChild(el("span", "x", "×")); o.onclick = () => o.remove(); };
+  const bad = node => {
+    node.classList.remove("bad"); void node.offsetWidth; node.classList.add("bad");
+    if (s.hint && !hb) { hb = el("button", "btn ghost", "Подсказка"); hb.onclick = hintView; row.prepend(hb); if (!s.hb) hintView(); }
+  };
+  const good = () => {
+    nb.style.visibility = "visible";
+    if (s.rev) {   // поверх фото появляется второе и слово «Правильно!», из него вылетает конфетти
+      const r = img(s.rev), base = f0.firstChild, t = el("div", "word", "Правильно!"); r.className = "o"; r.style.cssText += ";width:" + base.offsetWidth + "px;height:" + base.offsetHeight + "px;animation:in .6s both"; f0.append(r, t);
+      requestAnimationFrame(() => { const b = t.getBoundingClientRect(); pop(b.left + b.width / 2, b.top + b.height / 2, 60, ["■", "●", "▲", "♥"], 1); });
+    }
+  };
+  w.appendChild(el("h2", "", s.q)); if (s.tip) w.appendChild(el("p", "hint", s.tip));
+  if (s.o) {
+    const box = el("div", "opts");
+    s.o.map((t, k) => ({ t, k })).sort(() => Math.random() - .5).forEach(({ t, k }) => {
+      const b = el("button", "opt", t);
+      b.onclick = () => {
+        if (s.ok === "all" || s.ok.includes(k)) { b.classList.add("ok"); box.querySelectorAll("button").forEach(x => x.disabled = true); good(); }
+        else { if (s.fx && s.fx[k]) (s.fx[k] === "break" ? brk : shot)(); bad(b); }
+      };
+      box.appendChild(b);
+    });
+    w.appendChild(box);
+  } else {   // ответ вводится текстом
+    const inp = el("input"), ab = el("button", "btn", "Ответить"); inp.placeholder = "Твой ответ…";
+    const check = () => {
+      const v = inp.value.trim().toLowerCase().replace(/ё/g, "е"); if (!v) return;
+      if (s.inp.includes(v)) { inp.disabled = ab.disabled = true; inp.classList.add("okk"); good(); } else bad(inp);
+    };
+    ab.onclick = check; inp.onkeydown = e => { if (e.key === "Enter") check(); }; w.append(inp, ab);
+  }
+  w.appendChild(row);
+}
+
+async function save(question, answer) {   // ответ уходит в Supabase, а если не вышло, ждёт в браузере и отправится позже
+  const r = await sb.from("story_answers").insert({ question, answer });
+  if (r.error) store.set("story_pend", [...store.get("story_pend", []), { question, answer }]);
+}
+async function flush() { const p = store.get("story_pend", []); if (p.length && !(await sb.from("story_answers").insert(p)).error) store.set("story_pend", []); }
+
+function open(s, w) {
+  show(s.f);
+  const ta = el("textarea"), nb = nextBtn("Сохранить и дальше →", async () => { nb.disabled = true; await save(s.q, ta.value.trim()); go(i + 1); });
+  ta.placeholder = "Напиши своими словами…"; nb.disabled = true; ta.oninput = () => nb.disabled = !ta.value.trim();
+  w.append(el("h2", "", s.q), ta, el("p", "hint", s.note || ""), nb);
+}
+
+function shatter(r) {   // правый край шкалы разбивается на кусочки
+  for (let k = 0; k < 9; k++) {
+    const d = el("div", "bit sh"), a = (Math.random() - .35) * 2.2, sp = 90 + Math.random() * 260, w = 10 + Math.random() * 16;
+    d.style.cssText = "left:" + (r.right - 6 - Math.random() * 30) + "px;top:" + (r.top + Math.random() * (r.height - 14)) + "px;width:" + w + "px;height:" + (w * (.6 + Math.random() * .8)) + "px;--dx:" + Math.cos(a) * sp + "px;--dy:" + Math.sin(a) * sp + "px;--r:" + (Math.random() * 540 - 270) + "deg";
+    d.onanimationend = () => d.remove(); document.body.appendChild(d);
+  }
+}
+
+function meter(s, w) {   // шкала остаётся на месте, наполнение вырывается, вытягивается в линию и бьётся о края экрана
+  show(s.f); const b = el("button", "btn", s.b); w.append(el("h2", "", s.q), b);
+  b.onclick = () => {
+    b.disabled = true;
+    const o = overlay(), sc = el("div", "sc"), c = el("div", "cnt", "0%"), tr = el("div", "tr"), f = el("i");
+    o.classList.add("mo"); tr.appendChild(f); sc.append(c, tr); o.appendChild(sc);
+    const NS = "http://www.w3.org/2000/svg", mk = n => document.createElementNS(NS, n), r0 = tr.getBoundingClientRect(), cy = r0.top + r0.height / 2, M = r0.height / 2;
+    const svg = mk("svg"), defs = mk("defs"), g = mk("linearGradient"), p1 = mk("path"), p2 = mk("path");
+    g.setAttribute("id", "lg"); g.setAttribute("gradientUnits", "userSpaceOnUse"); g.setAttribute("x1", r0.left); g.setAttribute("x2", r0.right); g.setAttribute("y1", 0); g.setAttribute("y2", 0);
+    [["0", "#ff6f9f"], ["1", "#b57bff"]].forEach(s => { const e = mk("stop"); e.setAttribute("offset", s[0]); e.setAttribute("stop-color", s[1]); g.appendChild(e); });
+    defs.appendChild(g); svg.setAttribute("class", "trail"); p1.setAttribute("class", "t1"); p2.setAttribute("class", "t2");
+    p1.setAttribute("stroke-width", r0.height); p2.setAttribute("stroke-width", r0.height - 4);   // та же толщина, что у шкалы
+    svg.append(defs, p1, p2); o.appendChild(svg);
+    let v = 0, pts = null, dx = 1, dy = 0, first = true, last = performance.now();   // сначала летит прямо, направление меняется только после первого отскока
+    const tick = now => {
+      const dt = Math.min(.05, (now - last) / 1000); last = now;
+      if (!pts) {
+        v += dt * 40; f.style.width = Math.min(v, 100) + "%";
+        if (v >= 100) {   // наполнение вырывается из правого края шкалы, а край разбивается
+          v = 100; pts = [{ x: r0.right - M, y: cy }, { x: r0.right - M, y: cy }]; shatter(r0);
+          tr.style.clipPath = "polygon(0 0,91% 0,96% 22%,90% 45%,97% 68%,92% 100%,0 100%)";
+        }
+      } else {
+        v += dt * (100 + .3 * (v - 100));
+        const H = pts[pts.length - 1], sp = 420 + v * .9; H.x += dx * sp * dt; H.y += dy * sp * dt;
+        let hit = false;
+        if (H.x < M) { H.x = M; dx = Math.abs(dx); hit = true; } if (H.x > innerWidth - M) { H.x = innerWidth - M; dx = -Math.abs(dx); hit = true; }
+        if (H.y < M) { H.y = M; dy = Math.abs(dy); hit = true; } if (H.y > innerHeight - M) { H.y = innerHeight - M; dy = -Math.abs(dy); hit = true; }
+        if (hit) { if (first) { first = false; dx = Math.sign(dx) * .83; dy = .56; } pts.push({ x: H.x, y: H.y }); }
+        // линия только удлиняется: хвост остаётся на месте и не убирается
+        const d = "M" + pts.map(p => p.x.toFixed(1) + " " + p.y.toFixed(1)).join("L"); p1.setAttribute("d", d); p2.setAttribute("d", d);
+      }
+      c.textContent = Math.floor(v) + "%";
+      if (v < 1000) return requestAnimationFrame(tick);
+      const E = pts[pts.length - 1];
+      [[E.x, E.y], [innerWidth * .2, innerHeight * .3], [innerWidth * .8, innerHeight * .3], [innerWidth / 2, innerHeight * .7]].forEach(p => pop(p[0], p[1], 40, ["♥"]));
+      svg.remove(); sc.remove(); o.style.placeItems = "center";
+      const z = el("div"); z.style.textAlign = "center"; z.append(el("div", "inf", "∞%"), nextBtn("Дальше →", () => { o.remove(); go(i + 1); })); o.appendChild(z);
+    };
+    requestAnimationFrame(tick);
+  };
+}
+
+function puzzle(s, w) {   // нажми кусочек, потом место, куда его поставить
+  const [C, R] = s.g, im = new Image(), box = el("div", "pz"), nb = nextBtn(); nb.style.visibility = "hidden";
+  w.append(el("h2", "", "Собери нашу фотку"), el("p", "hint", "Нажми на кусочек, потом на место, куда его поставить."), nb); ph.appendChild(box);
+  im.onload = () => {
+    const k = Math.min(ph.clientWidth / im.naturalWidth, ph.clientHeight / im.naturalHeight);   // вписываем пазл в свободное место
+    box.style.cssText = "width:" + im.naturalWidth * k + "px;height:" + im.naturalHeight * k + "px;grid-template-columns:repeat(" + C + ",1fr);grid-template-rows:repeat(" + R + ",1fr)";
+    const order = [...Array(C * R).keys()]; let sel = -1;
+    do { order.sort(() => Math.random() - .5); } while (order.every((v, p) => v === p));
+    const draw = () => {
+      box.replaceChildren();
+      order.forEach((t, p) => {
+        const d = el("div", p === sel ? "sel" : "");
+        d.style.backgroundImage = 'url("' + im.src + '")'; d.style.backgroundSize = (C * 100) + "% " + (R * 100) + "%";
+        d.style.backgroundPosition = ((t % C) * 100 / (C - 1)) + "% " + (Math.floor(t / C) * 100 / (R - 1)) + "%";
+        d.onclick = () => tap(p); box.appendChild(d);
+      });
+    };
+    const tap = p => {
+      if (sel < 0) sel = p; else { if (sel !== p) [order[sel], order[p]] = [order[p], order[sel]]; sel = -1; }
+      draw(); if (order.every((v, q) => v === q)) { box.classList.add("done"); nb.style.visibility = "visible"; hearts(); }
+    };
+    draw();
+  };
+  im.src = url(s.f[0]);
+}
+
+function fin(s, w) {
+  show(s.f);
+  const t = el("p", "big", s.text), h = el("div", "huge", s.big);
+  t.style.animation = "in 1s .6s both"; h.style.animation = "in 1.2s 2.2s both"; w.append(t, h); hearts(); setTimeout(hearts, 3000);
+}
+
+/* ---------- запуск ---------- */
+async function start() {
+  const r = await sb.auth.getSession();
+  if (!r.data.session) { $("login").hidden = false; $("stage").hidden = true; return; }
+  $("login").hidden = true;
+  try {
+    const u = await sb.storage.from(BUCKET).createSignedUrl("story.json", 120);
+    if (u.error) throw u.error;
+    S = await (await fetch(u.data.signedUrl)).json(); i = Math.min(i, S.length - 1);
+    await sign(); $("stage").hidden = false; render(); flush();
+  } catch (e) { $("login").hidden = false; $("lf").hidden = true; $("err").textContent = "Не получилось загрузить историю. Попробуй обновить страницу."; }
+}
+$("lf").addEventListener("submit", async e => {
+  e.preventDefault(); $("err").textContent = "";
+  const r = await sb.auth.signInWithPassword({ email: $("em").value.trim(), password: $("pw").value });
+  if (r.error) $("err").textContent = "Не получилось войти: " + r.error.message; else start();
+});
+document.addEventListener("visibilitychange", async () => { if (!document.hidden && signedAt && Date.now() - signedAt > 45 * 60 * 1000) { await sign(); render(); } });
+start();
+</script>
+</body>
+</html>
