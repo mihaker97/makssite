@@ -156,6 +156,9 @@
     #home .card, .ch, .hint, .view.active .enter { animation: none; opacity: 1; transform: none; filter: none; }
     canvas, .heart { display: none; }
   }
+  .storybtn { display: inline-block; margin-top: 1.2rem; padding: .9rem 1.8rem; font: inherit; font-size: 1.05rem; color: #fff; cursor: pointer; border: 0; border-radius: 999px; background: linear-gradient(135deg, #ff6f9f, #b57bff); box-shadow: 0 8px 30px rgba(255,105,160,.5); animation: pulseBtn 2s ease-in-out infinite; }
+.storybtn[hidden] { display: none; }
+@keyframes pulseBtn { 50% { transform: scale(1.06); box-shadow: 0 8px 45px rgba(255,105,160,.8); } }
 </style>
     <link rel="stylesheet" href="fx.css">
   <script src="fx.js"></script>
@@ -193,6 +196,7 @@
       <div class="hr enter" style="--i:5"></div>
       <div class="since enter" style="--i:6" id="since"></div>
       <div class="next enter" style="--i:7">новый день через <b id="cd">00:00:00</b></div>
+      <button class="storybtn" id="toStory" hidden>Открой, это для тебя ♥</button>
     </div>
   </section>
 
@@ -272,6 +276,8 @@
   }
   function tick() {
     const n = kyiv(), d = daysSince(n);
+    const ts = document.getElementById("toStory");
+    if (ts) ts.hidden = !(location.search.includes("preview") || (n.year === 2026 && n.month === 11 && (n.day === 15 || n.day === 16)));
     if (d !== shown) { shown = d; renderStatic(n, d); if (!counting) numEl.textContent = d; }  // в 00:00 по Киеву число меняется само
     const left = 86400 - (n.hour * 3600 + n.minute * 60 + n.second);
     cdEl.textContent = [Math.floor(left / 3600), Math.floor(left / 60) % 60, left % 60].map(v => String(v).padStart(2, "0")).join(":");
@@ -319,6 +325,7 @@ toGallery.addEventListener("click", () => FX.leave("gallery.html", ...ctr(toGall
     if (e.key === "ArrowRight") go("days", innerWidth - 50, innerHeight / 2);
     if (e.key === "ArrowLeft") go("home", 50, innerHeight / 2);
   });
+  document.getElementById("toStory").addEventListener("click", e => window.FX ? FX.leave("story.html", ...ctr(e.currentTarget)) : (location.href = "story.html"));
   addEventListener("popstate", () => go(location.hash === "#days" ? "days" : "home", undefined, undefined, false));
   let sx = null, sy = null;
   addEventListener("touchstart", e => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
