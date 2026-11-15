@@ -325,7 +325,10 @@ toGallery.addEventListener("click", () => FX.leave("gallery.html", ...ctr(toGall
     if (e.key === "ArrowRight") go("days", innerWidth - 50, innerHeight / 2);
     if (e.key === "ArrowLeft") go("home", 50, innerHeight / 2);
   });
-  document.getElementById("toStory").addEventListener("click", e => window.FX ? FX.leave("story.html", ...ctr(e.currentTarget)) : (location.href = "story.html"));
+  document.getElementById("toStory").addEventListener("click", e => {
+  try { localStorage.removeItem("story_i"); } catch (err) {}   // каждый вход через кнопку начинается с первого шага
+  window.FX ? FX.leave("story.html", ...ctr(e.currentTarget)) : (location.href = "story.html");
+});
   addEventListener("popstate", () => go(location.hash === "#days" ? "days" : "home", undefined, undefined, false));
   let sx = null, sy = null;
   addEventListener("touchstart", e => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
