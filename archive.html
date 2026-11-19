@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Архив годовщин ♥</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#14102e">
+<style>
+  @property --a { syntax: "<angle>"; initial-value: 0deg; inherits: false; }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html, body { margin: 0; min-height: 100%; }
+  body { color: #fff; background: #0d0b1f; font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif; }
+  .aurora { position: fixed; inset: 0; z-index: 0; background:
+    radial-gradient(60vmax 60vmax at 15% 20%, rgba(255,105,160,.55), transparent 60%),
+    radial-gradient(55vmax 55vmax at 85% 25%, rgba(108,140,255,.5), transparent 60%),
+    radial-gradient(60vmax 60vmax at 60% 90%, rgba(181,123,255,.55), transparent 60%),
+    linear-gradient(135deg, #14102e, #2a1650, #4a1f5e); }
+  main { position: relative; z-index: 2; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: calc(4.6rem + env(safe-area-inset-top)) 1.2rem calc(2rem + env(safe-area-inset-bottom)); }
+  h1 { margin: 0 0 1.4rem; font-weight: 300; font-size: clamp(1.8rem, 7vw, 2.6rem); letter-spacing: .02em; text-align: center; }
+  #list { display: grid; gap: 18px; width: min(100%, 520px); }
+  .card { position: relative; border-radius: 26px; padding: 1rem; text-align: center; background: rgba(255,255,255,.07); box-shadow: 0 20px 60px rgba(0,0,0,.35); animation: in .8s cubic-bezier(.2,.8,.2,1) var(--d, 0s) both; }
+  .card::before { content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1.5px; pointer-events: none;
+    background: conic-gradient(from var(--a), transparent 0 55%, #ff8fb1 75%, #ffd1a0 85%, #b57bff 95%, transparent);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+            mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0); animation: spin 6s linear infinite; }
+  @keyframes spin { to { --a: 360deg; } }
+  @keyframes in { from { opacity: 0; transform: translateY(22px); filter: blur(8px); } }
+  .cv { display: block; width: 100%; aspect-ratio: 16/10; object-fit: cover; border-radius: 16px; background: linear-gradient(135deg, #ff6f9f, #b57bff 55%, #6c8cff); }
+  h2 { margin: .8rem 0 .2rem; font-weight: 300; font-size: 1.6rem; }
+  p { margin: .2rem 0; color: rgba(255,255,255,.8); }
+  .row { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; }
+  .btn { margin-top: .8rem; padding: .7rem 1.4rem; font: inherit; color: #fff; cursor: pointer; border: 0; border-radius: 999px; background: linear-gradient(135deg, #ff6f9f, #b57bff); box-shadow: 0 8px 30px rgba(255,105,160,.4); }
+  .btn.ghost { background: rgba(255,255,255,.14); box-shadow: none; }
+  .empty { text-align: center; margin-top: 2rem; }
+  input { width: 100%; margin: .4rem 0; padding: .8rem 1rem; font: inherit; color: #fff; outline: none; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.25); border-radius: 14px; }
+  .center { position: fixed; inset: 0; z-index: 8; display: grid; place-items: center; padding: 1rem; }
+  .center .card { width: min(100%, 420px); }
+  #load { z-index: 70; background: rgba(10,8,25,.55); } .ld { font-size: 4.5rem; color: #ff8fb1; animation: beat 1.2s ease-in-out infinite; }
+  @keyframes beat { 0%, 100% { transform: scale(1); } 15% { transform: scale(1.25); } 30% { transform: scale(1); } 45% { transform: scale(1.18); } }
+  .nav { position: fixed; z-index: 5; top: calc(1.2rem + env(safe-area-inset-top)); left: 1.2rem; width: 50px; height: 50px; display: grid; place-items: center; color: #fff; border-radius: 50%; border: 1px solid rgba(255,255,255,.3); background: rgba(255,255,255,.1); }
+  .nav svg { width: 24px; height: 24px; }
+  .hint { color: #ffc3d8; font-size: .95rem; }
+  @media (prefers-reduced-motion: reduce) { .card, .card::before { animation: none; } }
+</style>
+<link rel="stylesheet" href="fx.css">
+<script src="fx.js"></script>
+</head>
+<body>
+<div class="aurora"></div>
+<a class="nav" id="back" href="index.html#days" aria-label="Назад">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+</a>
+<main>
+  <h1>Архив годовщин ♥</h1>
+  <div id="list"></div>
+  <p class="empty" id="empty" hidden>Здесь будут копиться наши годовщины ♥</p>
+</main>
+<div class="center" id="login" hidden>
+  <section class="card">
+    <h1 style="font-size:1.8rem">Архив годовщин ♥</h1>
+    <form id="lf">
+      <input type="email" id="em" placeholder="Почта" autocomplete="username" required>
+      <input type="password" id="pw" placeholder="Пароль" autocomplete="current-password" required>
+      <button class="btn" type="submit">Войти</button>
+    </form>
+    <p class="hint" id="err"></p>
+  </section>
+</div>
+<div class="center" id="load"><div class="ld">♥</div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+// Список выпусков лежит в приватном бакете story (archive.json). Если файла нет, показывается выпуск «Два года».
+const BUCKET = "story";
+const DEFAULT = [{ id: "2", title: "Два года", date: "15 ноября 2026", from: "2026-11-15", file: "story.json", dir: "", cover: "01" }];
+const sb = supabase.createClient("https://cybozsjvdzzuxqwmyzku.supabase.co", "sb_publishable_vC4hZcyGeSY_30s5hox2TA_xvNMpLVt");
+const $ = id => document.getElementById(id);
+const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt !== undefined) e.textContent = txt; return e; };
+function today() {   // сегодняшняя дата по Киеву, формат 2026-11-15
+  for (const tz of ["Europe/Kyiv", "Europe/Kiev"]) { try { return new Intl.DateTimeFormat("en-CA", { timeZone: tz }).format(new Date()); } catch (e) {} }
+  return new Date().toISOString().slice(0, 10);
+}
+async function readJson(name) { const u = await sb.storage.from(BUCKET).createSignedUrl(name, 120); if (u.error) throw u.error; return (await fetch(u.data.signedUrl)).json(); }
+const open = (href, e) => { const r = e.currentTarget.getBoundingClientRect(); window.FX ? FX.leave(href, r.left + r.width / 2, r.top + r.height / 2) : (location.href = href); };
+
+async function start() {
+  $("load").hidden = false;
+  const r = await sb.auth.getSession();
+  if (!r.data.session) { $("load").hidden = true; $("login").hidden = false; return; }
+  $("login").hidden = true;
+  let items = DEFAULT; try { items = await readJson("archive.json"); } catch (e) {}
+  const t = today();
+  items = items.filter(x => !x.from || x.from <= t).sort((a, b) => (b.from || "").localeCompare(a.from || ""));   // выпуски открываются в свою дату, новые сверху
+  $("empty").hidden = items.length > 0;
+  const paths = items.filter(x => x.cover).map(x => (x.dir || "") + x.cover + ".jpg");
+  const s = paths.length ? await sb.storage.from(BUCKET).createSignedUrls(paths, 3600) : { data: [] };
+  const urls = new Map((s.data || []).map(u => [u.path, u.signedUrl]));
+  const list = $("list"); list.replaceChildren();
+  items.forEach((x, k) => {
+    const c = el("section", "card"), u = urls.get((x.dir || "") + x.cover + ".jpg"), row = el("div", "row");
+    c.style.setProperty("--d", k * .15 + "s");
+    let cv; if (u) { cv = el("img", "cv"); cv.src = u; cv.alt = ""; } else cv = el("div", "cv");
+    const go = r => e => open("story.html?y=" + encodeURIComponent(x.id) + (r ? "&r=1" : ""), e);
+    const b1 = el("button", "btn", "Пройти заново"), b2 = el("button", "btn ghost", "Просмотреть");
+    b1.onclick = go(false); b2.onclick = go(true); row.append(b1, b2);
+    c.append(cv, el("h2", "", x.title), el("p", "", x.date || ""), row); list.appendChild(c);
+  });
+  $("load").hidden = true;
+}
+$("lf").addEventListener("submit", async e => {
+  e.preventDefault(); $("err").textContent = "";
+  const r = await sb.auth.signInWithPassword({ email: $("em").value.trim(), password: $("pw").value });
+  if (r.error) $("err").textContent = "Не получилось войти: " + r.error.message; else start();
+});
+$("back").addEventListener("click", e => { e.preventDefault(); open("index.html#days", e); });
+start();
+</script>
+</body>
+</html>

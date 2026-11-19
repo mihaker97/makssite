@@ -19,6 +19,12 @@
     radial-gradient(60vmax 60vmax at 60% 90%, rgba(181,123,255,.55), transparent 60%),
     linear-gradient(135deg, #14102e, #2a1650, #4a1f5e); }
   .center { position: fixed; inset: 0; z-index: 2; display: grid; place-items: center; padding: 1rem; }
+  #nav { position: fixed; top: calc(8px + env(safe-area-inset-top)); left: 12px; right: 12px; z-index: 6; display: flex; gap: 8px; align-items: center; justify-content: center; }
+  #nav > * { padding: .45rem .9rem; font: inherit; font-size: .9rem; color: #fff; text-decoration: none; cursor: pointer; border-radius: 999px; border: 1px solid rgba(255,255,255,.3); background: rgba(255,255,255,.14); }
+  #nav #toArc { margin-right: auto; } #nav #pos { min-width: 5.5rem; }
+  body.rv #stage { padding-top: calc(54px + env(safe-area-inset-top)); }
+  .sl { z-index: 56; } .sg { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; width: min(92vw, 720px); max-height: 82dvh; overflow: auto; padding: 4px; }
+  .sb { display: flex; gap: 8px; align-items: center; text-align: left; padding: .5rem .7rem; font: inherit; font-size: .85rem; color: #fff; cursor: pointer; border-radius: 12px; border: 1px solid rgba(255,255,255,.25); background: rgba(255,255,255,.1); } .sb b { font-size: 1.1rem; min-width: 1.6rem; } .sb.cur { border-color: #ff8fb1; background: rgba(255,143,177,.25); }
   #load { z-index: 70; background: rgba(10,8,25,.55); }
   .ld { font-size: 4.5rem; color: #ff8fb1; animation: beat 1.2s ease-in-out infinite; }
   @keyframes beat { 0%, 100% { transform: scale(1); } 15% { transform: scale(1.25); } 30% { transform: scale(1); } 45% { transform: scale(1.18); } }
@@ -103,6 +109,7 @@
   </section>
 </div>
 <main id="stage" hidden><div id="ph"></div><section class="card" id="panel"></section></main>
+<div id="nav" hidden><a id="toArc" href="archive.html">← Архив</a><button id="pv">‹</button><button id="pos"></button><button id="nx">›</button></div>
 <div class="center" id="load"><div class="ld">♥</div></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
@@ -117,8 +124,11 @@ const store = {
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
 };
 // любой новый вход (кнопка на счётчике, ссылка, адрес) начинается с первого шага, а обновление страницы сохраняет прогресс
-if (((performance.getEntriesByType("navigation")[0] || {}).type) === "navigate") store.set("story_i", 0);
-let S = [], i = store.get("story_i", 0), urls = {}, signedAt = 0;
+const Q = new URLSearchParams(location.search), YID = Q.get("y"), REVIEW = Q.get("r") === "1", KEY = "story_i" + (YID ? "_" + YID : "");   // ?y=2 открывает выпуск из архива, &r=1 включает просмотр
+let DIR = "", ANS = {};
+if (((performance.getEntriesByType("navigation")[0] || {}).type) === "navigate") store.set(KEY, 0);
+let S = [], i = store.get(KEY, 0), urls = {}, signedAt = 0;
+if (REVIEW) document.body.classList.add("rv");
 if (/^#\d+$/.test(location.hash)) i = +location.hash.slice(1);   // #5 = открыть шаг 5 (для тестов)
 
 /* ---------- фотки ---------- */
@@ -130,7 +140,7 @@ function fb(n) {   // заглушка, если файла нет в бакет
   x.fillStyle = "#fff"; x.font = "bold 64px sans-serif"; x.textAlign = "center"; x.fillText("♥ " + n, 450, 320);
   return c.toDataURL("image/jpeg", .8);
 }
-const url = n => urls[n + ".jpg"] || fb(n);
+const url = n => urls[DIR + n + ".jpg"] || fb(n);
 const img = n => { const e = el("img"); e.src = url(n); e.alt = ""; e.draggable = false; return e; };
 const fit = (e, b) => { if (!e.naturalWidth || !b.isConnected) return; if (!b.clientWidth || !b.clientHeight) return requestAnimationFrame(() => fit(e, b)); const k = Math.min(b.clientWidth / e.naturalWidth, b.clientHeight / e.naturalHeight); e.style.width = e.naturalWidth * k + "px"; e.style.height = e.naturalHeight * k + "px"; };
 const fr = (n, k) => { const d = el("div", "fr"), e = img(n); d.style.setProperty("--d", (k || 0) * .2 + "s"); e.onload = () => fit(e, d); d.appendChild(e); return d; };
@@ -139,7 +149,7 @@ addEventListener("resize", refit); new ResizeObserver(refit).observe(ph);
 const show = list => list.forEach((n, k) => ph.appendChild(fr(n, k)));
 async function sign() {   // ссылки живут час, поэтому обновляем их при возврате на вкладку
   const names = new Set();
-  S.forEach(s => [...(s.f || []), ...(s.L || []), ...(s.R || []), ...(s.hint || []), s.C, s.rev, s.hold].forEach(n => n && names.add(n + ".jpg")));
+  S.forEach(s => [...(s.f || []), ...(s.L || []), ...(s.R || []), ...(s.hint || []), s.C, s.rev, s.hold].forEach(n => n && names.add(DIR + n + ".jpg")));
   const r = await sb.storage.from(BUCKET).createSignedUrls([...names], 3600);
   (r.data || []).forEach(u => { if (u.signedUrl) urls[u.path] = u.signedUrl; });
   signedAt = Date.now();
@@ -170,7 +180,7 @@ const shot = () => overlay(3400).append(heart("S"), el("div", "bullet"), el("div
 const names = s => [...(s.f || []), ...(s.L || []), ...(s.R || []), s.C].filter(Boolean);   // фото, нужные сразу
 const extra = s => [...names(s), ...(s.hint || []), s.rev, s.hold].filter(Boolean);           // и те, что появятся по ходу шага
 const cache = new Map();
-const pull = n => { const u = urls[n + ".jpg"]; if (!u) return Promise.resolve(); if (!cache.has(u)) cache.set(u, new Promise(r => { const im = new Image(); im.onload = im.onerror = r; im.src = u; })); return cache.get(u); };
+const pull = n => { const u = urls[DIR + n + ".jpg"]; if (!u) return Promise.resolve(); if (!cache.has(u)) cache.set(u, new Promise(r => { const im = new Image(); im.onload = im.onerror = r; im.src = u; })); return cache.get(u); };
 const preload = k => { for (let j = 1; j <= 3; j++) if (S[k + j]) extra(S[k + j]).forEach(pull); };   // тихо грузим следующие три шага
 const wait = (s, ms) => Promise.race([Promise.all(names(s).map(pull)), new Promise(r => setTimeout(r, ms))]);
 let lock = false;
@@ -178,12 +188,13 @@ const go = async n => {   // переходим, когда фото следу�
   if (lock) return; lock = true;
   const k = Math.max(0, Math.min(n, S.length - 1)), t = setTimeout(() => $("load").hidden = false, 250);
   try { await wait(S[k], 4000); } finally { clearTimeout(t); $("load").hidden = true; }
-  try { i = k; store.set("story_i", i); render(); preload(i); } finally { lock = false; }
+  try { i = k; store.set(KEY, i); render(); preload(i); } finally { lock = false; }
 };
 const nextBtn = (label, fn) => { const b = el("button", "btn", label || "Дальше →"); b.onclick = fn || (() => go(i + 1)); return b; };
 
 function render() {
   const s = S[i], w = el("div");
+  if (REVIEW) $("pos").textContent = (i + 1) + " / " + S.length;
   ph.replaceChildren(); ph.className = ""; pn.replaceChildren(w); pn.style.animation = "none"; void pn.offsetWidth; pn.style.animation = "";
   ({ hero, photo, quiz, open, meter, puzzle, final: fin })[s.t](s, w);
 }
@@ -197,7 +208,7 @@ function photo(s, w) { show(s.f); w.append(el("p", "", s.text), nextBtn()); }
 
 function quiz(s, w) {
   show(s.f);
-  const f0 = ph.firstChild, nb = nextBtn(), row = el("div", "row"); let hb;
+  const f0 = ph.firstChild, nb = nextBtn(), row = el("div", "row"); let hb, box;
   nb.style.visibility = "hidden"; row.appendChild(nb);
   if (s.hold) {   // пока зажато фото, поверх показывается второе
     const h = img(s.hold), base = f0.firstChild; h.className = "o"; h.style.cssText += ";opacity:0;transition:opacity .15s"; f0.appendChild(h);
@@ -218,9 +229,9 @@ function quiz(s, w) {
   };
   w.appendChild(el("h2", "", s.q)); if (s.tip) w.appendChild(el("p", "hint", s.tip));
   if (s.o) {
-    const box = el("div", "opts");
+    box = el("div", "opts");
     s.o.map((t, k) => ({ t, k })).sort(() => Math.random() - .5).forEach(({ t, k }) => {
-      const b = el("button", "opt", t);
+      const b = el("button", "opt", t); b.dataset.k = k;
       b.onclick = () => {
         if (s.ok === "all" || s.ok.includes(k)) { b.classList.add("ok"); box.querySelectorAll("button").forEach(x => x.disabled = true); good(); }
         else { if (s.fx && s.fx[k]) (s.fx[k] === "break" ? brk : shot)(); bad(b); }
@@ -235,8 +246,10 @@ function quiz(s, w) {
       if (s.inp.some(a => v.includes(a))) { inp.disabled = ab.disabled = true; inp.classList.add("okk"); good(); } else bad(inp);
     };
     ab.onclick = check; inp.onkeydown = e => { if (e.key === "Enter") check(); }; w.append(inp, ab);
+    if (REVIEW) { inp.value = s.inp.join(", "); inp.classList.add("okk"); }
   }
   w.appendChild(row);
+  if (REVIEW) { if (box) box.querySelectorAll("button").forEach(b => { if (s.ok === "all" || s.ok.includes(+b.dataset.k)) b.classList.add("ok"); }); good(); }
 }
 
 async function save(question, answer) {   // ответ уходит в Supabase, а если не вышло, ждёт в браузере и отправится позже
@@ -249,6 +262,7 @@ function open(s, w) {
   show(s.f);
   const ta = el("textarea"), nb = nextBtn("Сохранить и дальше →", async () => { nb.disabled = true; await save(s.q, ta.value.trim()); go(i + 1); });
   ta.placeholder = "Напиши своими словами…"; nb.disabled = true; ta.oninput = () => nb.disabled = !ta.value.trim();
+  if (REVIEW) { ta.oninput = null; ta.value = ANS[s.q] || ""; nb.disabled = false; nb.textContent = "Дальше →"; nb.onclick = () => go(i + 1); }   // в просмотре показываем сохранённый ответ и ничего не записываем
   w.append(el("h2", "", s.q), ta, el("p", "hint", s.note || ""), nb);
 }
 
@@ -261,7 +275,7 @@ function shatter(r) {   // правый край шкалы разбиваетс
 }
 
 function meter(s, w) {   // шкала остаётся на месте, наполнение вырывается, вытягивается в линию и бьётся о края экрана
-  show(s.f); const b = el("button", "btn", s.b); w.append(el("h2", "", s.q), b);
+  show(s.f); const b = el("button", "btn", s.b); w.append(el("h2", "", s.q), b); if (REVIEW) w.appendChild(nextBtn());
   b.onclick = () => {
     b.disabled = true;
     const o = overlay(), sc = el("div", "sc"), c = el("div", "cnt", "0%"), tr = el("div", "tr"), f = el("i");
@@ -311,6 +325,7 @@ function puzzle(s, w) {   // нажми кусочек, потом место, �
     box.style.cssText = "width:" + im.naturalWidth * k + "px;height:" + im.naturalHeight * k + "px;grid-template-columns:repeat(" + C + ",1fr);grid-template-rows:repeat(" + R + ",1fr)";
     const order = [...Array(C * R).keys()]; let sel = -1;
     do { order.sort(() => Math.random() - .5); } while (order.every((v, p) => v === p));
+    if (REVIEW) order.sort((a, b) => a - b);
     const draw = () => {
       box.replaceChildren();
       order.forEach((t, p) => {
@@ -324,7 +339,7 @@ function puzzle(s, w) {   // нажми кусочек, потом место, �
       if (sel < 0) sel = p; else { if (sel !== p) [order[sel], order[p]] = [order[p], order[sel]]; sel = -1; }
       draw(); if (order.every((v, q) => v === q)) { box.classList.add("done"); nb.style.visibility = "visible"; hearts(); }
     };
-    draw();
+    draw(); if (REVIEW) { box.classList.add("done"); nb.style.visibility = "visible"; }
   };
   im.src = url(s.f[0]);
 }
@@ -336,16 +351,18 @@ function fin(s, w) {
 }
 
 /* ---------- запуск ---------- */
+async function readJson(name) { const u = await sb.storage.from(BUCKET).createSignedUrl(name, 120); if (u.error) throw u.error; return (await fetch(u.data.signedUrl)).json(); }
 async function start() {
   $("load").hidden = false;
   const r = await sb.auth.getSession();
   if (!r.data.session) { $("load").hidden = true; $("login").hidden = false; $("stage").hidden = true; return; }
   $("login").hidden = true;
   try {
-    const u = await sb.storage.from(BUCKET).createSignedUrl("story.json", 120);
-    if (u.error) throw u.error;
-    S = await (await fetch(u.data.signedUrl)).json(); i = Math.min(i, S.length - 1);
-    await sign(); await wait(S[i], 4000); preload(i); $("stage").hidden = false; $("load").hidden = true; render(); flush();
+    let file = "story.json";
+    if (YID) { try { const e = (await readJson("archive.json")).find(x => x.id === YID); if (e) { file = e.file; DIR = e.dir || ""; } } catch (err) {} }
+    S = await readJson(file); i = Math.min(i, S.length - 1);
+    if (REVIEW) { try { const a = await sb.from("story_answers").select("question,answer").order("created_at"); (a.data || []).forEach(x => ANS[x.question] = x.answer); } catch (err) {} }
+    await sign(); await wait(S[i], 4000); preload(i); $("stage").hidden = false; $("load").hidden = true; if (REVIEW) $("nav").hidden = false; render(); flush();
   } catch (e) { $("load").hidden = true; $("login").hidden = false; $("lf").hidden = true; $("err").textContent = "Не получилось загрузить историю. Попробуй обновить страницу."; }
 }
 $("lf").addEventListener("submit", async e => {
@@ -354,6 +371,20 @@ $("lf").addEventListener("submit", async e => {
   if (r.error) $("err").textContent = "Не получилось войти: " + r.error.message; else start();
 });
 document.addEventListener("visibilitychange", async () => { if (!document.hidden && signedAt && Date.now() - signedAt > 45 * 60 * 1000) { await sign(); render(); preload(i); } });
+if (REVIEW) {   // просмотр: стрелки, список всех шагов, переход обратно в архив
+  const step = d => { if (!document.activeElement.matches("input,textarea")) go(i + d); };
+  $("pv").onclick = () => go(i - 1); $("nx").onclick = () => go(i + 1);
+  addEventListener("keydown", e => { if (e.key === "ArrowLeft") step(-1); if (e.key === "ArrowRight") step(1); });
+  $("toArc").onclick = e => { e.preventDefault(); const r = e.currentTarget.getBoundingClientRect(); window.FX ? FX.leave("archive.html", r.left + r.width / 2, r.top + r.height / 2) : (location.href = "archive.html"); };
+  $("pos").onclick = () => {
+    const o = overlay(), g = el("div", "sg"); o.classList.add("sl");
+    S.forEach((s, k) => {
+      const b = el("button", "sb" + (k === i ? " cur" : "")); b.append(el("b", "", String(k + 1)), el("span", "", (s.q || s.text || "").slice(0, 26) || ({ puzzle: "Пазл" })[s.t] || "Фото"));
+      b.onclick = () => { o.remove(); go(k); }; g.appendChild(b);
+    });
+    o.appendChild(g); o.onclick = e => { if (e.target === o) o.remove(); };
+  };
+}
 start();
 </script>
 </body>
