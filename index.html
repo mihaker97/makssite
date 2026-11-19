@@ -159,6 +159,8 @@
   .storybtn { display: inline-block; margin-top: 1.2rem; padding: .9rem 1.8rem; font: inherit; font-size: 1.05rem; color: #fff; cursor: pointer; border: 0; border-radius: 999px; background: linear-gradient(135deg, #ff6f9f, #b57bff); box-shadow: 0 8px 30px rgba(255,105,160,.5); animation: pulseBtn 2s ease-in-out infinite; }
 .storybtn[hidden] { display: none; }
 @keyframes pulseBtn { 50% { transform: scale(1.06); box-shadow: 0 8px 45px rgba(255,105,160,.8); } }
+  .arc { position: fixed; top: calc(14px + env(safe-area-inset-top)); right: 14px; z-index: 6; padding: .55rem 1.1rem; font: inherit; font-size: .9rem; color: #fff; cursor: pointer; border-radius: 999px; border: 1px solid rgba(255,255,255,.3); background: rgba(255,255,255,.12); transition: box-shadow .3s, transform .3s; }
+.arc:hover { box-shadow: 0 0 30px rgba(255,143,177,.55); transform: scale(1.05); }
 </style>
     <link rel="stylesheet" href="fx.css">
   <script src="fx.js"></script>
@@ -184,6 +186,7 @@
     <button class="nav left show" id="back" aria-label="Назад">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
     </button>
+    <button class="arc" id="toArc">Архив годовщин</button>
         <button class="nav show" id="toGallery" aria-label="Фото">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
     </button>
@@ -329,6 +332,7 @@ toGallery.addEventListener("click", () => FX.leave("gallery.html", ...ctr(toGall
   try { localStorage.removeItem("story_i"); } catch (err) {}   // каждый вход через кнопку начинается с первого шага
   window.FX ? FX.leave("story.html", ...ctr(e.currentTarget)) : (location.href = "story.html");
 });
+  document.getElementById("toArc").addEventListener("click", e => window.FX ? FX.leave("archive.html", ...ctr(e.currentTarget)) : (location.href = "archive.html"));
   addEventListener("popstate", () => go(location.hash === "#days" ? "days" : "home", undefined, undefined, false));
   let sx = null, sy = null;
   addEventListener("touchstart", e => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
